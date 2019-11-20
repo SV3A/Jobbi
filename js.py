@@ -15,6 +15,17 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
+
+class JobAdd():
+    add_url     = ""
+    company_url = ""
+    company     = ""
+    add_heading = ""
+    add_content = ""
+
+
+jobs = []
+
 url = "https://www.jobindex.dk/jobsoegning/ingenioer/maskiningenioer/" + \
       "storkoebenhavn"
 
@@ -40,14 +51,28 @@ print("Finished loading")
 
 # Check if modal appears and close it
 if driver.find_element_by_class_name('show-on-load'):
-    print("shadow")
     driver.find_element_by_xpath("//div[contains(@class,'show-on-load')]" +
                                  "//button[@class='close']").click()
 
-jobs = driver.find_elements_by_xpath("//div[@class='PaidJob']")
+adds = driver.find_elements_by_xpath("//div[@class='PaidJob']")
 
-for job in jobs:
-    html = job.get_attribute('innerHTML')
+for add in adds:
+    job = JobAdd()
+    html = add.get_attribute('innerHTML')
     soup = BeautifulSoup(html, 'html.parser')
-    print(soup.prettify())
-    sys.exit()
+
+    links = soup.find_all("a")
+
+    job.company_url = links[0].get('href')
+    job.add_url = links[1].get('href')
+
+    job.add_heading = links[1].string
+    job.company = links[2].string
+
+    content = ""
+    for text in soup.find_all('p'):
+        content = content + text.get_text().strip() + '\n'
+
+    job.add_content = content
+
+    jobs.append(job)
