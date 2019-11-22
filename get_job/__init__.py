@@ -1,6 +1,7 @@
 #!/bin/python3
 import sys
 import json
+import hashlib
 from requests import get
 from bs4 import BeautifulSoup
 from requests.exceptions import RequestException
@@ -15,17 +16,25 @@ class JobAdd():
     add_content = ""
 
     """
+    Hashing function to create an unique job id
+    """
+    def get_hash(self):
+        add_data = self.add_url+self.company_url+self.company + \
+                   self.add_heading+self.add_content
+        return hashlib.md5(add_data.encode()).hexdigest()
+
+    """
     Distill object into a dictionary and return it
     """
     def get_dict(self):
-        dict = {
+        return {
+                "id"         : self.get_hash(),
                 "add_url"    : self.add_url,
                 "company_url": self.company_url,
                 "company"    : self.company,
                 "add_heading": self.add_heading,
                 "add_content": self.add_content
                 }
-        return dict
 
 
 url = "https://www.jobindex.dk/jobsoegning/ingenioer/maskiningenioer/" + \
