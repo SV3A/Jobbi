@@ -9,9 +9,7 @@ setup(name='get_job',
       license='',
       packages=['get_job'],
       install_requires=[
+          'requests'
           'beautifulsoup4',
-          'requests',
-          'selenium',
-          'chromedriver'
       ],
       zip_safe=False)
