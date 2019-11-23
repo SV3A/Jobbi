@@ -11,5 +11,6 @@ setup(name='get_job',
       install_requires=[
           'requests'
           'beautifulsoup4',
+          'pyqt5'
       ],
       zip_safe=False)
