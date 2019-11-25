@@ -7,8 +7,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPalette, QColor
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QDesktopWidget
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout
-from PyQt5.QtWidgets import QStatusBar
-from PyQt5.QtWidgets import QLineEdit, QLabel
+from PyQt5.QtWidgets import QStatusBar, QScrollArea
+from PyQt5.QtWidgets import QLineEdit, QLabel, QTextEdit
 
 
 class getJobUI(QMainWindow):
@@ -29,20 +29,26 @@ class getJobUI(QMainWindow):
         self.move(qt_rectangle.topLeft())
 
         # Set central widget and general layout
-        self.generalLayout  = QVBoxLayout()
         self._centralWidget = QWidget(self)
         self.setCentralWidget(self._centralWidget)
+
+        self.generalLayout = QVBoxLayout()
         self._centralWidget.setLayout(self.generalLayout)
 
         self.generalLayout.setContentsMargins(100, 20, 100, 20)
 
         # Insert job add objects
-        self.generalLayout.addWidget(JobAdd("Teknisk support & salg med " +
-                                            "produktansvar"))
-        self.generalLayout.addWidget(JobAdd("Global Key Account Manager for " +
-                                            "responsible business growth"))
-        self.generalLayout.addWidget(JobAdd("Global Key Account Manager for " +
-                                            "responsible business growth"))
+        testhead = "Global Key Account Manager for responsible business growth"
+        testtext = "Elma Instruments A/S, " +\
+                   "Farum\nVi har forrygende travlt og søg er derfor " +\
+                   "hurtigst muligt en maskinmester med el erfaring eller " +\
+                   "el-installatør til vores salgs- & support afdeling i " +\
+                   "Farum. Du kommer til at arbejde i en dynamisk afdeling " +\
+                   "med otte gode kollegaer, hvor alle hjælper alle og " +\
+                   "hvor du samtidigt bliver du fagligt udfordret."
+
+        for i in range(10):
+            self.generalLayout.addWidget(JobAdd(testhead, testtext))
 
         # Create GUI components
         self._createStatusBar()
@@ -65,7 +71,7 @@ class getJobUI(QMainWindow):
 
 
 class JobAdd(QWidget):
-    def __init__(self, heading, *args, **kwargs):
+    def __init__(self, heading, content, *args, **kwargs):
         super(JobAdd, self).__init__(*args, **kwargs)
 
         # Set background color
@@ -75,17 +81,26 @@ class JobAdd(QWidget):
         self.setPalette(palette)
 
         # Setup layout for job add
+        self.setFixedHeight(200)
+        self.setMinimumWidth(600)
         self.subLayout      = QVBoxLayout()
         self._centralWidget = QWidget(self)
         self._centralWidget.setLayout(self.subLayout)
-
-        self.subLayout.setContentsMargins(50, 50, 50, 50)
+        self.subLayout.setContentsMargins(10, 10, 10, 10)
 
         # Add heading
         headingLabel = QLabel()
         headingLabel.setText(heading)
-        headingLabel.setFont(QtGui.QFont("Arial", 20, QtGui.QFont.Bold))
+        headingLabel.setFont(QtGui.QFont("Helvetica", 18, QtGui.QFont.Bold))
         self.subLayout.addWidget(headingLabel)
+
+        # Add content
+        contentLabel = QTextEdit()
+        contentLabel.setFixedHeight(100)
+        contentLabel.setText(content)
+        contentLabel.setReadOnly(True)
+        contentLabel.setFont(QtGui.QFont("Helvetica", 14))
+        self.subLayout.addWidget(contentLabel)
 
 
 def main():
