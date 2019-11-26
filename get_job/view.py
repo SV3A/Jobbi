@@ -46,10 +46,9 @@ class getJobUI(QMainWindow):
         self._createStatusBar()
 
     # Insert job add objects
-    def addJobElement(self, adds):
-        for add in adds:
-            self.generalLayout.addWidget(_JobAddElement(add.add_heading,
-                                                        add.add_content))
+    def addJobElement(self, jobAdd):
+        self.generalLayout.addWidget(_JobAddElement(jobAdd.add_heading,
+                                                    jobAdd.add_content))
 
     def updateStatus(self, msg):
         self.status.showMessage(msg)

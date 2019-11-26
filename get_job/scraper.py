@@ -35,7 +35,7 @@ class Jobindex(_Scraper):
     def parse_adds(self):
         for add in self.adds_html:
             # Create job object
-            job = jobs.JobAdd()
+            job = jobs.JobAdd("jobindex")
 
             # Extract add details
             links = add.find_all("a")
@@ -50,10 +50,11 @@ class Jobindex(_Scraper):
                 content = content + text.get_text().strip() + '\n'
             job.add_content = content
 
+            # Calculate hash and assign it to the job object
+            job.hash()
+
             # Append to JobAdd objects list
             self.adds.append(job)
-
-        return self.adds
 
 
 class Jobfinder(_Scraper):
