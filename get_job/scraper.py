@@ -53,6 +53,8 @@ class Jobindex(_Scraper):
             # Append to JobAdd objects list
             self.adds.append(job)
 
+        return self.adds
+
 
 class Jobfinder(_Scraper):
     # TODO

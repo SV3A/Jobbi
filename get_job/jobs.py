@@ -1,4 +1,8 @@
+import json
 import hashlib
+import scraper
+
+adds = []
 
 
 class JobAdd():
@@ -28,3 +32,21 @@ class JobAdd():
                 "add_heading": self.add_heading,
                 "add_content": self.add_content
                 }
+
+
+def fetchJobs():
+    # Initiate scraper
+    # jobindexScraper = scraper.Jobindex()
+
+    # Parse
+    # adds = jobindexScraper.parse_adds()
+    pass
+
+
+def writeAdds(adds):
+    """ Write adds to json file """
+    for add in adds:
+        with open("data.json", "a", encoding="utf8") as write_file:
+            json.dump(add.get_dict(), write_file, indent=4,
+                      separators=(',', ': '), ensure_ascii=False)
+
