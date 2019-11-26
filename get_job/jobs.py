@@ -43,7 +43,11 @@ def fetchJobs():
     pass
 
 
-def writeAdds(adds):
+def readData():
+    pass
+
+
+def writeData(adds):
     """ Write adds to json file """
     for add in adds:
         with open("data.json", "a", encoding="utf8") as write_file:

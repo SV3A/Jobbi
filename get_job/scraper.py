@@ -1,5 +1,5 @@
 import sys
-from jobs import JobAdd
+import jobs
 from bs4 import BeautifulSoup
 from requests import get
 from requests.exceptions import RequestException
@@ -35,7 +35,7 @@ class Jobindex(_Scraper):
     def parse_adds(self):
         for add in self.adds_html:
             # Create job object
-            job = JobAdd()
+            job = jobs.JobAdd()
 
             # Extract add details
             links = add.find_all("a")

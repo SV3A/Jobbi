@@ -5,7 +5,7 @@ from PyQt5.QtGui import QIcon, QPalette, QColor
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QDesktopWidget
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout
 from PyQt5.QtWidgets import QStatusBar, QScrollArea
-from PyQt5.QtWidgets import QLineEdit, QLabel, QTextEdit
+from PyQt5.QtWidgets import QLineEdit, QLabel, QTextEdit, QPushButton
 
 
 class getJobUI(QMainWindow):
@@ -42,34 +42,35 @@ class getJobUI(QMainWindow):
         self.mainScrollArea.setWidgetResizable(True)
 
         # Create GUI components
-        self._populateAddsPane()
+        self._createLoadButton()
         self._createStatusBar()
 
     # Insert job add objects
-    def _populateAddsPane(self):
-        testhead = "Global Key Account Manager for responsible business growth"
-        testtext = "Elma Instruments A/S, " +\
-                   "Farum\nVi har forrygende travlt og søg er derfor " +\
-                   "hurtigst muligt en maskinmester med el erfaring eller " +\
-                   "el-installatør til vores salgs- & support afdeling i " +\
-                   "Farum. Du kommer til at arbejde i en dynamisk afdeling " +\
-                   "med otte gode kollegaer, hvor alle hjælper alle og " +\
-                   "hvor du samtidigt bliver du fagligt udfordret."
+    def addJobElement(self, adds):
+        for add in adds:
+            self.generalLayout.addWidget(_JobAddElement(add.add_heading,
+                                                        add.add_content))
 
-        for i in range(10):
-            self.generalLayout.addWidget(JobAddElement(testhead, testtext))
+    def updateStatus(self, msg):
+        self.status.showMessage(msg)
 
     def _createStatusBar(self):
-        status = QStatusBar()
-        status.showMessage("Loading job adds...")
-        self.setStatusBar(status)
+        self.status = QStatusBar()
+        self.status.showMessage("Welcome")
+        self.setStatusBar(self.status)
+
+    def _createLoadButton(self):
+        self.loadButton = QPushButton("Load jobs")
+        self.loadButton.setMaximumWidth(100)
+        self.generalLayout.addWidget(self.loadButton)
+        self.generalLayout.addStretch()
 
 
-class JobAddElement(QWidget):
+class _JobAddElement(QWidget):
     """ Class defining the job add GUI elements"""
 
     def __init__(self, heading, content, *args, **kwargs):
-        super(JobAddElement, self).__init__(*args, **kwargs)
+        super(_JobAddElement, self).__init__(*args, **kwargs)
 
         # Set background color
         self.setAutoFillBackground(True)
@@ -100,9 +101,7 @@ class JobAddElement(QWidget):
         self.subLayout.addWidget(contentLabel)
 
 
-def startView():
-    app = QApplication([])
+def initApp():
+    app = QApplication(sys.argv)
     app.setWindowIcon(QIcon('icon.png'))
-    view = getJobUI()
-    view.show()
-    sys.exit(app.exec_())
+    return app
