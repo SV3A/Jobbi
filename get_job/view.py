@@ -81,19 +81,21 @@ class _JobAddElement(QWidget):
         self.setFixedHeight(200)
         self.setMinimumWidth(600)
         self.subLayout = QVBoxLayout()
-        self._centralWidget = QWidget(self)
-        self._centralWidget.setLayout(self.subLayout)
+        jobAddWidget = QWidget(self)
+        jobAddWidget.setLayout(self.subLayout)
         self.subLayout.setContentsMargins(10, 10, 10, 10)
 
         # Add heading
         headingLabel = QLabel()
         headingLabel.setText(heading)
-        headingLabel.setFont(QtGui.QFont("Helvetica", 18, QtGui.QFont.Bold))
+        headingLabel.setFont(QtGui.QFont("Helvetica", 16, QtGui.QFont.Bold))
         self.subLayout.addWidget(headingLabel)
 
         # Add content
         contentLabel = QTextEdit()
-        contentLabel.setFixedHeight(100)
+        # contentLabel.setStyleSheet(r"background-color:#ffffff;border-radius:5px")
+        contentLabel.setMaximumHeight(150)
+        contentLabel.setFixedWidth(700)
         contentLabel.setText(content)
         contentLabel.setReadOnly(True)
         contentLabel.setFont(QtGui.QFont("Helvetica", 14))

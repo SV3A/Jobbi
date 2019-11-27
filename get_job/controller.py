@@ -5,6 +5,7 @@ class Controller():
     def __init__(self, view):
         self._view = view
         self._model = model.JobDB()
+        self.fetchAdds()
         self.loadAdds()
         self._setupSignals()
 
@@ -15,7 +16,8 @@ class Controller():
             self._view.addJobElement(add)
 
     def fetchAdds(self):
-        self._model.fetchData()
+        self._model.fetchData("jobindex")
 
     def _setupSignals(self):
-        self._view.loadButton.clicked.connect(self.loadAdds)
+        # self._view.loadButton.clicked.connect(self.loadAdds)
+        pass
