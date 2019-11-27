@@ -1,9 +1,10 @@
 import sys
+from util import link_format
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPalette, QColor
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QDesktopWidget
-from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout
+from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QFrame
 from PyQt5.QtWidgets import QStatusBar, QScrollArea
 from PyQt5.QtWidgets import QLineEdit, QLabel, QTextEdit, QPushButton
 
@@ -48,7 +49,11 @@ class GetJobUI(QMainWindow):
     # Insert job add objects
     def addJobElement(self, jobAdd):
         self.generalLayout.addWidget(_JobAddElement(jobAdd.add_heading,
-                                                    jobAdd.add_content))
+                                                    jobAdd.add_content,
+                                                    jobAdd.company,
+                                                    jobAdd.company_url,
+                                                    jobAdd.add_url,
+                                                    jobAdd.add_owner))
 
     def updateStatus(self, msg):
         self.status.showMessage(msg)
@@ -65,41 +70,72 @@ class GetJobUI(QMainWindow):
         self.generalLayout.addStretch()
 
 
-class _JobAddElement(QWidget):
+class _JobAddElement(QFrame):
     """ Class defining the job add GUI elements"""
 
-    def __init__(self, heading, content, *args, **kwargs):
-        super(_JobAddElement, self).__init__(*args, **kwargs)
+    def __init__(self, heading, content, company, company_url, addurl,
+                 add_owner):
+        super(_JobAddElement, self).__init__()
 
         # Set background color
         self.setAutoFillBackground(True)
         palette = self.palette()
-        palette.setColor(QPalette.Window, QColor("#E5E5E5"))
+        palette.setColor(QPalette.Window, QColor("#FAF4F4"))
         self.setPalette(palette)
 
-        # Setup layout for job add
+        # Setup layout for the job adds
         self.setFixedHeight(200)
         self.setMinimumWidth(600)
-        self.subLayout = QVBoxLayout()
-        jobAddWidget = QWidget(self)
-        jobAddWidget.setLayout(self.subLayout)
-        self.subLayout.setContentsMargins(10, 10, 10, 10)
+
+        self.vertLayout = QVBoxLayout()
+        self.setLayout(self.vertLayout)
+        self.vertLayout.setContentsMargins(20, 10, 20, 15)
+
+        self.horzLayout = QHBoxLayout()
+
+        # Source icon
+        logo = QLabel()
+        pixmap = QtGui.QPixmap(add_owner + '.png')
+        logo.setPixmap(pixmap.scaledToWidth(22))
+        logo.setToolTip(add_owner.capitalize() + " add")
 
         # Add heading
         headingLabel = QLabel()
-        headingLabel.setText(heading)
-        headingLabel.setFont(QtGui.QFont("Helvetica", 16, QtGui.QFont.Bold))
-        self.subLayout.addWidget(headingLabel)
+
+        # Truncate headings over 70 chars
+        if len(heading) > 70:
+            i = 70
+            while heading[i] != " " or i == 1:
+                i -= 1
+            head_text = link_format(heading[0:i+1] + "...", addurl)
+            headingLabel.setToolTip(heading)
+        else:
+            head_text = link_format(heading, addurl)
+
+        headingLabel.setText(head_text)
+        headingLabel.setOpenExternalLinks(True)
+        headingLabel.setFont(QtGui.QFont("Helvetica", 14, QtGui.QFont.Bold))
+
+        # Add company name
+        companyLabel = QLabel()
+        companyLabel.setFont(QtGui.QFont("Helvetica", 12, QtGui.QFont.Bold))
+        companyLabel.setText(link_format(company, company_url))
+        companyLabel.setOpenExternalLinks(True)
+
+        # Make top row layout
+        self.horzLayout.addWidget(logo)
+        self.horzLayout.addWidget(headingLabel)
+        self.horzLayout.addStretch()
+        self.horzLayout.addWidget(companyLabel)
+        self.vertLayout.addLayout(self.horzLayout)
 
         # Add content
         contentLabel = QTextEdit()
-        # contentLabel.setStyleSheet(r"background-color:#ffffff;border-radius:5px")
-        contentLabel.setMaximumHeight(150)
-        contentLabel.setFixedWidth(700)
         contentLabel.setText(content)
         contentLabel.setReadOnly(True)
-        contentLabel.setFont(QtGui.QFont("Helvetica", 14))
-        self.subLayout.addWidget(contentLabel)
+        contentLabel.setMaximumWidth(1000)
+        # contentLabel.setFont(QtGui.QFont("Helvetica", 14))
+        self.vertLayout.addWidget(contentLabel)
 
 
 def initApp():
