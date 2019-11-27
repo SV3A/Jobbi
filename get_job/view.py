@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QStatusBar, QScrollArea
 from PyQt5.QtWidgets import QLineEdit, QLabel, QTextEdit, QPushButton
 
 
-class getJobUI(QMainWindow):
+class GetJobUI(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle('Get Job')

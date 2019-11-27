@@ -9,7 +9,7 @@ __author__ = "Svend Andersen"
 
 def main():
     app = view.initApp()
-    window = view.getJobUI()
+    window = view.GetJobUI()
     window.show()
     controller = Controller(view=window)
     sys.exit(app.exec_())
