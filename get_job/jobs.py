@@ -31,7 +31,7 @@ class JobDB:
             new_data = []
             for add in scr.adds:
                 if add.id not in storedIDs:
-                    new_data.append(add.get_dict())
+                    new_data.append(add)
         else:
             new_data = scr.adds
 
@@ -68,15 +68,15 @@ class JobDB:
     def _writeData(self, new_data):
         """ Write loaded adds to json file """
 
+        data = [add.get_dict() for add in new_data]
+
         # If data exist on disk prepend and concatenate
         if os.path.isfile("./"+self.dbFile):
 
             with open(self.dbFile) as json_file:
                 old_data = json.load(json_file)
 
-            data = new_data+old_data
-        else:
-            data = [add.get_dict() for add in new_data]
+            data = data+old_data
 
         # Write data to json file
         with open(self.dbFile, "w", encoding="utf8") as write_file:
