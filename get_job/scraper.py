@@ -71,3 +71,9 @@ def download_src(url):
             return resp.content
     except RequestException as e:
         sys.exit('Error during requests to {0} : {1}'.format(url, str(e)))
+
+
+# Entry point for debugging purposes
+if __name__ == '__main__':
+    scraper = Jobindex()
+    scraper.parse_adds()

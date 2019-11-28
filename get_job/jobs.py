@@ -7,67 +7,76 @@ import scraper
 
 class JobDB:
     def __init__(self):
-        # List containing JobAdd objects
-        self.adds = []
-
         self.dbFile = "data.json"
 
-    def fetchData(self, target):
+    def fetchData(self, src_target):
+        """ Scrape source and write new data"""
+
         # Initiate scraper
-        if target == "jobindex":
+        if src_target == "jobindex":
             scr = scraper.Jobindex()
         else:
             sys.exit("Invalid scraper")
 
-        # Parse html, copy data and write to disk
+        # Parse html
         scr.parse_adds()
-        self.adds = scr.adds
-        self.writeData()
 
-    def readData(self):
-        """ Read adds from json file """
-
-        loadedIDs = self._getLoadedHashes()
-
-        with open(self.dbFile) as json_file:
-
-            data = json.load(json_file)
-            for add in data:
-
-                if add["id"] not in loadedIDs:
-                    job = JobAdd(add["add_owner"])
-
-                    job.id          = add["id"]
-                    job.add_url     = add["add_url"]
-                    job.company_url = add["company_url"]
-                    job.company     = add["company"]
-                    job.add_heading = add["add_heading"]
-                    job.add_content = add["add_content"]
-
-                    self.adds.append(job)
-
-    def writeData(self):
-        """ Write loaded adds to json file """
-
-        # If data exist on disk guard for duplicates
+        # If data exists guard for duplicate adds
         if os.path.isfile("./"+self.dbFile):
             # Get hash-ids of stored adds
             storedIDs = self._getStoredHashes()
 
-            # Prepare loaded data (in self.adds) to be written to disk - check-
-            # ing that the data don't already exist
-            newdata = []
-            for add in self.adds:
+            # Prepare loaded data to be written to disk - checking that the
+            # data does not already exist
+            new_data = []
+            for add in scr.adds:
                 if add.id not in storedIDs:
-                    newdata.append(add.get_dict())
-
-            # Read what is already stored and concatenate it
-            olddata = []
-            with open(self.dbFile) as json_file:
-                olddata = json.load(json_file)
-            data = olddata+newdata
+                    new_data.append(add.get_dict())
         else:
-            data = [add.get_dict() for add in self.adds]
+            new_data = scr.adds
+
+        if len(new_data) == 0:
+            return None
+        else:
+            self._writeData(new_data)
+            return new_data
+
+    def readData(self):
+        """ Read adds from json file """
+
+        if not os.path.isfile("./"+self.dbFile):
+            return None
+
+        adds = []
+        with open(self.dbFile) as json_file:
+
+            data = json.load(json_file)
+
+            for add in data:
+                job = JobAdd(add["add_owner"])
+
+                job.id          = add["id"]
+                job.add_url     = add["add_url"]
+                job.company_url = add["company_url"]
+                job.company     = add["company"]
+                job.add_heading = add["add_heading"]
+                job.add_content = add["add_content"]
+
+                adds.append(job)
+        return adds
+
+    def _writeData(self, new_data):
+        """ Write loaded adds to json file """
+
+        # If data exist on disk prepend and concatenate
+        if os.path.isfile("./"+self.dbFile):
+
+            with open(self.dbFile) as json_file:
+                old_data = json.load(json_file)
+
+            data = new_data+old_data
+        else:
+            data = [add.get_dict() for add in new_data]
 
         # Write data to json file
         with open(self.dbFile, "w", encoding="utf8") as write_file:
@@ -82,15 +91,6 @@ class JobDB:
 
             for add in json.load(json_file):
                 ids.append(add["id"])
-
-        return ids
-
-    def _getLoadedHashes(self):
-        """ Get ids from all of the currently-loaded adds """
-        ids = []
-
-        for add in self.adds:
-            ids.append(add.id)
 
         return ids
 

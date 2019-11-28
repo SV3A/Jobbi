@@ -43,20 +43,36 @@ class GetJobUI(QMainWindow):
         self.mainScrollArea.setWidgetResizable(True)
 
         # Create GUI components
+
+        # List containing custom job add widgets
+        self.addElements = []
+
         self._createLoadButton()
         self._createStatusBar()
 
     # Insert job add objects
     def addJobElement(self, jobAdd):
-        self.generalLayout.addWidget(_JobAddElement(jobAdd.add_heading,
-                                                    jobAdd.add_content,
-                                                    jobAdd.company,
-                                                    jobAdd.company_url,
-                                                    jobAdd.add_url,
-                                                    jobAdd.add_owner))
+        element = _JobAddElement(jobAdd.add_heading,
+                                 jobAdd.add_content,
+                                 jobAdd.company,
+                                 jobAdd.company_url,
+                                 jobAdd.add_url,
+                                 jobAdd.add_owner)
+
+        # The first add element will have the index 2, with the current layout,
+        # thus to insert new adds add the top of the list the insertWidget()
+        # method is used insted of addWidget()
+        self.generalLayout.insertWidget(2, element)
+
+        self.addElements.append(element)
+
+    def getIndices(self):
+        for el in self.addElements:
+            print(self.generalLayout.indexOf(el))
 
     def updateStatus(self, msg):
         self.status.showMessage(msg)
+        self.update()
 
     def _createStatusBar(self):
         self.status = QStatusBar()
@@ -70,7 +86,7 @@ class GetJobUI(QMainWindow):
         self.generalLayout.addStretch()
 
 
-class _JobAddElement(QFrame):
+class _JobAddElement(QWidget):
     """ Class defining the job add GUI elements"""
 
     def __init__(self, heading, content, company, company_url, addurl,
