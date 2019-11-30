@@ -2,33 +2,54 @@ import sys
 from util import link_format
 from get_job import img_path
 from PyQt5 import QtGui
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon, QPalette, QColor
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QDesktopWidget
-from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QFrame
-from PyQt5.QtWidgets import QStatusBar, QScrollArea
-from PyQt5.QtWidgets import QLineEdit, QLabel, QTextEdit, QPushButton
+from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout
+from PyQt5.QtWidgets import QToolBar, QAction, QStatusBar, QScrollArea
+from PyQt5.QtWidgets import QLabel, QTextEdit, QPushButton
 
 
 class GetJobUI(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle('Get Job')
-        self.setGeometry(0, 0, 980, 650)
-        self.setMinimumWidth(800)
-        self.setMinimumHeight(400)
 
-        # Center main window
-        qt_rectangle = self.frameGeometry()
-        qt_rectangle.moveCenter(QDesktopWidget().availableGeometry().center())
-        self.move(qt_rectangle.topLeft())
+        # Init window
+        self._setupWindow()
 
-        # Set window background color
-        self.setAutoFillBackground(True)
-        p = self.palette()
-        p.setColor(self.backgroundRole(), Qt.white)
-        self.setPalette(p)
+        # List containing custom job add widgets
+        self.addElements = []
 
+        # Init UI and create GUI components
+        self._createToolBar()
+        self._setupUI()
+        self._createStatusBar()
+
+    # Insert job add objects
+    def addJobElement(self, jobAdd):
+        element = _JobAddElement(jobAdd.add_heading,
+                                 jobAdd.add_content,
+                                 jobAdd.company,
+                                 jobAdd.company_url,
+                                 jobAdd.add_url,
+                                 jobAdd.add_owner)
+
+        # The first add element will have the index 0, with the current layout,
+        # thus to insert new adds add the top of the list the insertWidget()
+        # method is used insted of addWidget()
+        self.generalLayout.insertWidget(0, element)
+
+        self.addElements.append(element)
+
+    def getIndices(self):
+        for el in self.addElements:
+            print(self.generalLayout.indexOf(el))
+
+    def updateStatus(self, msg):
+        self.status.showMessage(msg)
+        self.update()
+
+    def _setupUI(self):
         # Set central widget to be a scroll area
         self.mainScrollArea = QScrollArea(self)
         self.setCentralWidget(self.mainScrollArea)
@@ -43,48 +64,43 @@ class GetJobUI(QMainWindow):
         self.mainScrollArea.setWidget(self.baseWidget)
         self.mainScrollArea.setWidgetResizable(True)
 
-        # Create GUI components
+    def _createToolBar(self):
+        # Define main toolbar
+        self.toolbar = QToolBar("Main toolbar")
+        self.addToolBar(self.toolbar)
+        self.toolbar.setIconSize(QSize(22, 22))
+        self.toolbar.setFixedHeight(36)
 
-        # List containing custom job add widgets
-        self.addElements = []
+        # Define action to be included in the toolbar and add them to it
+        settingsAction = QAction(QIcon(str(img_path/"build-24px.svg")),
+                                 "Settings", self)
+        self.updateAction = QAction(QIcon(
+            str(img_path/"cloud_download-24px.svg")), "Load adds", self)
 
-        self._createLoadButton()
-        self._createStatusBar()
-
-    # Insert job add objects
-    def addJobElement(self, jobAdd):
-        element = _JobAddElement(jobAdd.add_heading,
-                                 jobAdd.add_content,
-                                 jobAdd.company,
-                                 jobAdd.company_url,
-                                 jobAdd.add_url,
-                                 jobAdd.add_owner)
-
-        # The first add element will have the index 2, with the current layout,
-        # thus to insert new adds add the top of the list the insertWidget()
-        # method is used insted of addWidget()
-        self.generalLayout.insertWidget(2, element)
-
-        self.addElements.append(element)
-
-    def getIndices(self):
-        for el in self.addElements:
-            print(self.generalLayout.indexOf(el))
-
-    def updateStatus(self, msg):
-        self.status.showMessage(msg)
-        self.update()
+        self.toolbar.addAction(settingsAction)
+        self.toolbar.addAction(self.updateAction)
 
     def _createStatusBar(self):
         self.status = QStatusBar()
         self.status.showMessage("Welcome")
         self.setStatusBar(self.status)
 
-    def _createLoadButton(self):
-        self.loadButton = QPushButton("Load jobs")
-        self.loadButton.setMaximumWidth(100)
-        self.generalLayout.addWidget(self.loadButton)
-        self.generalLayout.addStretch()
+    def _setupWindow(self):
+        self.setWindowTitle('Get Job')
+        self.setGeometry(0, 0, 990, 660)
+        self.setMinimumWidth(800)
+        self.setMinimumHeight(400)
+
+        # Center main window
+        qt_rectangle = self.frameGeometry()
+        qt_rectangle.moveCenter(QDesktopWidget().availableGeometry().center())
+        self.move(qt_rectangle.topLeft())
+
+        # Set window background color
+        self.setAutoFillBackground(True)
+        p = self.palette()
+        p.setColor(self.backgroundRole(), Qt.white)
+        self.setPalette(p)
 
 
 class _JobAddElement(QWidget):

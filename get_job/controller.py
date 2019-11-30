@@ -38,4 +38,5 @@ class Controller():
             self._view.updateStatus("No new adds were found")
 
     def _setupSignals(self):
-        self._view.loadButton.clicked.connect(self.refreshAdds)
+        # Load adds toolbar button
+        self._view.updateAction.triggered.connect(self.refreshAdds)
