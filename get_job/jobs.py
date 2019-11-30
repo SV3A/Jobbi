@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import json
 import hashlib
@@ -6,40 +7,51 @@ import scraper
 
 
 class JobDB:
-    def __init__(self):
+    def __init__(self, target_urls):
         self.dbFile = "data.json"
+        self.target_urls = target_urls
 
-    def fetchData(self, src_target):
+        # Regular expression get domain from url
+        self.url_re = r"(?!w{1,}\.)(\w+\.?)([a-zA-Z\-]+)(?=\.(com|org|net|dk))"
+
+    def fetchData(self):
         """ Scrape source and write new data"""
 
-        # Initiate scraper
-        if src_target == "jobindex":
-            scr = scraper.Jobindex()
-        else:
-            sys.exit("Invalid scraper")
+        data = []
 
-        # Parse html
-        scr.parse_adds()
+        for url in self.target_urls:
+            # Get domain from url
+            domain = re.search(self.url_re, url).group(0)
 
-        # If data exists guard for duplicate adds
-        if os.path.isfile("./"+self.dbFile):
-            # Get hash-ids of stored adds
-            storedIDs = self._getStoredHashes()
+            # Initiate scraper
+            if domain == "jobindex":
+                scr = scraper.Jobindex(url)
+            elif domain == "jobfinder":
+                scr = scraper.Jobfinder(url)
+            else:
+                sys.exit("Error")
 
-            # Prepare loaded data to be written to disk - checking that the
-            # data does not already exist
-            new_data = []
-            for add in scr.adds:
-                if add.id not in storedIDs:
-                    new_data.append(add)
-        else:
-            new_data = scr.adds
+            # Parse html
+            scr.parse_adds()
 
-        if len(new_data) == 0:
+            # If data exists guard for duplicate adds
+            if os.path.isfile("./"+self.dbFile):
+                # Get hash-ids of stored adds
+                storedIDs = self._getStoredHashes()
+
+                # Prepare loaded data to be written to disk - checking that the
+                # data does not already exist
+                for add in scr.adds:
+                    if add.id not in storedIDs:
+                        data.append(add)
+            else:
+                data = data + scr.adds
+
+        if len(data) == 0:
             return None
         else:
-            self._writeData(new_data)
-            return new_data
+            self._writeData(data)
+            return data
 
     def readData(self):
         """ Read adds from json file """

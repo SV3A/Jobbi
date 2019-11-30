@@ -1,5 +1,6 @@
 import sys
 from util import link_format
+from get_job import img_path
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPalette, QColor
@@ -94,9 +95,16 @@ class _JobAddElement(QWidget):
         super(_JobAddElement, self).__init__()
 
         # Set background color
+        if add_owner == "jobindex":
+            bcColor = "#FAF4F4"
+        elif add_owner == "jobfinder":
+            bcColor = "#F7FBFD"
+        else:
+            bcColor = "#F4F4F4"
+
         self.setAutoFillBackground(True)
         palette = self.palette()
-        palette.setColor(QPalette.Window, QColor("#FAF4F4"))
+        palette.setColor(QPalette.Window, QColor(bcColor))
         self.setPalette(palette)
 
         # Setup layout for the job adds
@@ -111,7 +119,7 @@ class _JobAddElement(QWidget):
 
         # Source icon
         logo = QLabel()
-        pixmap = QtGui.QPixmap(add_owner + '.png')
+        pixmap = QtGui.QPixmap(str(img_path / (add_owner+'.png')))
         logo.setPixmap(pixmap.scaledToWidth(22))
         logo.setToolTip(add_owner.capitalize() + " add")
 
@@ -156,5 +164,5 @@ class _JobAddElement(QWidget):
 
 def initApp():
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon('icon.png'))
+    app.setWindowIcon(QIcon(str(img_path/"icon.png")))
     return app

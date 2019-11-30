@@ -21,9 +21,8 @@ class _Scraper:
 
 class Jobindex(_Scraper):
 
-    def __init__(self):
-        self.url = "https://www.jobindex.dk/jobsoegning/ingenioer/" + \
-                   "maskiningenioer/storkoebenhavn"
+    def __init__(self, url):
+        self.url = url
 
         # Instantiate Soup object
         self._get_html()
@@ -86,7 +85,7 @@ class Jobfinder(_Scraper):
             job.add_heading = title.a.string
 
             # Extract job add content
-            content = "Lokation: " + workplace + "\n"
+            content = "Job location: " + workplace + "\n"
             content = content+add.find("div", class_=
                                        "node-list__item-description").p.string
             job.add_content = content
@@ -111,5 +110,5 @@ def download_src(url):
 
 # Entry point for debugging purposes
 if __name__ == '__main__':
-    scraper = Jobindex()
+    scraper = Jobfinder()
     scraper.parse_adds()

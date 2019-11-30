@@ -1,11 +1,13 @@
 #!/bin/python3
 import sys
 import view
+from pathlib import Path
 from controller import Controller
 
 __version__ = "0.1"
 __author__ = "Svend Andersen"
 
+img_path = Path("./img/")
 
 def main():
     app = view.initApp()

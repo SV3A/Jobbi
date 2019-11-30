@@ -4,11 +4,16 @@ from datetime import datetime
 
 class Controller():
     def __init__(self, view):
+        target_urls = [
+                "https://www.jobindex.dk/jobsoegning/ingenioer/" +
+                "maskiningenioer/storkoebenhavn",
+                "https://www.jobfinder.dk/jobs/category/maskin-produktion"]
+
         self.clock = datetime.now().time()
 
         # Initiate view- and model objects for the controller
         self._view  = view
-        self._model = model.JobDB()
+        self._model = model.JobDB(target_urls)
 
         # Load stored data
         self.loadAdds(self._model.readData())
@@ -24,7 +29,7 @@ class Controller():
                 self._view.addJobElement(add)
 
     def refreshAdds(self):
-        adds = self._model.fetchData("jobindex")
+        adds = self._model.fetchData()
 
         if adds is not None:
             self.loadAdds(adds)
