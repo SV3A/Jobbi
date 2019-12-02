@@ -1,5 +1,6 @@
 import sys
 import settings
+import addslogic as al
 from util import link_format
 from get_job import img_path
 from PyQt5 import QtGui
@@ -26,8 +27,16 @@ class GetJobUI(QMainWindow):
         self._setupUI()
         self._createStatusBar()
 
+    def insertJobs(self, adds):
+        if adds is not None:
+            adds = al.shuffle_adds(adds)
+            adds.reverse()
+
+            for add in adds:
+                self.insertJobElement(add)
+
     # Insert job add objects
-    def addJobElement(self, jobAdd):
+    def insertJobElement(self, jobAdd):
         element = _JobAddElement(jobAdd.add_heading,
                                  jobAdd.add_content,
                                  jobAdd.company,

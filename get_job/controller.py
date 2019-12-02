@@ -22,11 +22,7 @@ class Controller():
         self._setupSignals()
 
     def loadAdds(self, adds):
-        if adds is not None:
-            adds.reverse()
-
-            for add in adds:
-                self._view.addJobElement(add)
+        self._view.insertJobs(adds)
 
     def refreshAdds(self):
         adds = self._model.fetchData()
