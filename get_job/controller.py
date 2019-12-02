@@ -40,3 +40,6 @@ class Controller():
     def _setupSignals(self):
         # Load adds toolbar button
         self._view.updateAction.triggered.connect(self.refreshAdds)
+
+        # Settings toolbar button
+        self._view.settingsAction.triggered.connect(self._view.openSettings)

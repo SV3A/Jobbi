@@ -1,4 +1,5 @@
 import sys
+import settings
 from util import link_format
 from get_job import img_path
 from PyQt5 import QtGui
@@ -7,7 +8,7 @@ from PyQt5.QtGui import QIcon, QPalette, QColor
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QDesktopWidget
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout
 from PyQt5.QtWidgets import QToolBar, QAction, QStatusBar, QScrollArea
-from PyQt5.QtWidgets import QLabel, QTextEdit, QPushButton
+from PyQt5.QtWidgets import QLabel, QTextEdit
 
 
 class GetJobUI(QMainWindow):
@@ -49,6 +50,14 @@ class GetJobUI(QMainWindow):
         self.status.showMessage(msg)
         self.update()
 
+    def openSettings(self, s):
+        print("click", s)
+
+        if self.settingsDlg.exec_():
+            print("Success!")
+        else:
+            print("Cancel!")
+
     def _setupUI(self):
         # Set central widget to be a scroll area
         self.mainScrollArea = QScrollArea(self)
@@ -64,6 +73,9 @@ class GetJobUI(QMainWindow):
         self.mainScrollArea.setWidget(self.baseWidget)
         self.mainScrollArea.setWidgetResizable(True)
 
+        # Setup settings dialog
+        self.settingsDlg = settings.SettingsDialog(self)
+
     def _createToolBar(self):
         # Define main toolbar
         self.toolbar = QToolBar("Main toolbar")
@@ -72,12 +84,12 @@ class GetJobUI(QMainWindow):
         self.toolbar.setFixedHeight(36)
 
         # Define action to be included in the toolbar and add them to it
-        settingsAction = QAction(QIcon(str(img_path/"build-24px.svg")),
-                                 "Settings", self)
+        self.settingsAction = QAction(QIcon(str(img_path/"build-24px.svg")),
+                                      "Settings", self)
         self.updateAction = QAction(QIcon(
             str(img_path/"cloud_download-24px.svg")), "Load adds", self)
 
-        self.toolbar.addAction(settingsAction)
+        self.toolbar.addAction(self.settingsAction)
         self.toolbar.addAction(self.updateAction)
 
     def _createStatusBar(self):
