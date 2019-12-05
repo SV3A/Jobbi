@@ -13,6 +13,7 @@ class Controller():
 
         # Initiate view- and model objects for the controller
         self._view  = view
+        self._view.initSettingsDlg(target_urls)
         self._model = model.JobDB(target_urls)
 
         # Load stored data
@@ -33,9 +34,12 @@ class Controller():
         else:
             self._view.updateStatus("No new adds were found")
 
+    def openSettings(self, s):
+        self._view.openSettings(s)
+
     def _setupSignals(self):
         # Load adds toolbar button
         self._view.updateAction.triggered.connect(self.refreshAdds)
 
         # Settings toolbar button
-        self._view.settingsAction.triggered.connect(self._view.openSettings)
+        self._view.settingsAction.triggered.connect(self.openSettings)

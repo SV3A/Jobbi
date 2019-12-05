@@ -60,12 +60,17 @@ class GetJobUI(QMainWindow):
         self.update()
 
     def openSettings(self, s):
-        print("click", s)
 
         if self.settingsDlg.exec_():
-            print("Success!")
+            print("Saved- and closed settings")
+            for url in self.settingsDlg.urlItems:
+                print(url.text())
         else:
-            print("Cancel!")
+            print("Closed settings without save")
+
+    def initSettingsDlg(self, providerURLs):
+        # Setup settings dialog
+        self.settingsDlg = settings.SettingsDialog(providerURLs)
 
     def _setupUI(self):
         # Set central widget to be a scroll area
@@ -81,9 +86,6 @@ class GetJobUI(QMainWindow):
         # Point baseWidget to the main scroll area
         self.mainScrollArea.setWidget(self.baseWidget)
         self.mainScrollArea.setWidgetResizable(True)
-
-        # Setup settings dialog
-        self.settingsDlg = settings.SettingsDialog(self)
 
     def _createToolBar(self):
         # Define main toolbar

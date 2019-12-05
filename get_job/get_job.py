@@ -9,6 +9,7 @@ __author__ = "Svend Andersen"
 
 img_path = Path("./img/")
 
+
 def main():
     app = view.initApp()
     window = view.GetJobUI()
