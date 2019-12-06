@@ -59,19 +59,6 @@ class GetJobUI(QMainWindow):
         self.status.showMessage(msg)
         self.update()
 
-    def openSettings(self, s):
-
-        if self.settingsDlg.exec_():
-            print("Saved- and closed settings")
-            for url in self.settingsDlg.urlItems:
-                print(url.text())
-        else:
-            print("Closed settings without save")
-
-    def initSettingsDlg(self, providerURLs):
-        # Setup settings dialog
-        self.settingsDlg = settings.SettingsDialog(providerURLs)
-
     def _setupUI(self):
         # Set central widget to be a scroll area
         self.mainScrollArea = QScrollArea(self)

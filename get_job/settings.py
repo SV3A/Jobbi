@@ -1,3 +1,5 @@
+import os
+import json
 from PyQt5.QtWidgets import QDialog
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout
 from PyQt5.QtWidgets import QDialogButtonBox, QPushButton
@@ -74,6 +76,30 @@ class SettingsDialog(QDialog):
         self.providerList = QListWidget()
         self.providerList.setMinimumWidth(600)
         self.vertLayout.addWidget(self.providerList)
+
+
+class ProviderDB:
+    def __init__(self):
+        self.dbFile = "settings.json"
+
+    def writeData(self, provider_list):
+        """ Write provider list to settings file """
+
+        # Write data to json file
+        with open(self.dbFile, "w", encoding="utf8") as write_file:
+            json.dump(provider_list, write_file, indent=4,
+                      separators=(',', ': '), ensure_ascii=False)
+
+    def readData(self):
+        """ Read provider list from settings file """
+
+        if not os.path.isfile("./"+self.dbFile):
+            return []
+
+        with open(self.dbFile) as json_file:
+            provider_list = json.load(json_file)
+
+        return provider_list
 
 
 # Entry point for debugging purposes
