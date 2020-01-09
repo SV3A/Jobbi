@@ -4,23 +4,26 @@ from PyQt5.QtWidgets import QDialog
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout
 from PyQt5.QtWidgets import QDialogButtonBox, QPushButton
 from PyQt5.QtWidgets import QLineEdit, QListWidget, QLabel, QListWidgetItem
+from PyQt5.QtWidgets import QAbstractItemView
 
 
 class SettingsDialog(QDialog):
+    """ Definition of the settings dialog view """
 
     def __init__(self, providerURLs, *args, **kwargs):
         super(SettingsDialog, self).__init__(*args, **kwargs)
 
-        self.urlItems = []
+        self.urlItems = []  # Reference list of url-entry objects
         self.providerURLs = providerURLs
 
         self._setupDialog()
         self._createUrlList()
 
+        # If the class is initiated with urls add them to the list object
         if len(providerURLs) > 0:
             self._initiateProviderList()
 
-        # Add or remove buttons
+        # Add and remove buttons
         self.horzLayout.addStretch()
         self.horzLayout.addWidget(QLabel("Add or remove: "))
 
@@ -28,6 +31,7 @@ class SettingsDialog(QDialog):
         self.addButton.setMaximumWidth(60)
 
         self.rmButton = QPushButton("-")
+        self.rmButton.setEnabled(False)
         self.rmButton.setMaximumWidth(60)
 
         self.horzLayout.addWidget(self.addButton)
@@ -45,6 +49,7 @@ class SettingsDialog(QDialog):
 
         self.addButton.clicked.connect(self.addItem)
         self.rmButton.clicked.connect(self.removeItem)
+        self.providerList.itemSelectionChanged.connect(self._toggleRemove)
 
     def _setupDialog(self):
         """ Sets up the window and layouts """
@@ -56,30 +61,51 @@ class SettingsDialog(QDialog):
         self.setLayout(self.vertLayout)
 
     def _initiateProviderList(self):
-
+        """ If the class is initiated with urls add them to the list object """
         for url in self.providerURLs:
             newItem = QListWidgetItem(str(url), self.providerList)
             self.urlItems.append(newItem)
 
     def addItem(self):
+        """ Add new provider (url) """
         newItem = QListWidgetItem("https://", self.providerList)
         self.providerList.openPersistentEditor(newItem)
+        # Add to reference list
         self.urlItems.append(newItem)
 
     def removeItem(self):
-        if len(self.urlItems) > 0:
-            self.providerList.takeItem(len(self.urlItems)-1)
-            self.urlItems.pop()
+        """ Removed selected urls """
+        for selected in self.providerList.selectedItems():
+            # Find index in reference list
+            rmIdx = self.urlItems.index(selected)
+            # Remove from GUI
+            self.providerList.takeItem(rmIdx)
+            # Remove from reference list
+            self.urlItems.pop(rmIdx)
 
     def _createUrlList(self):
+        """ Sets up the url list containing the jobadd providers """
         self.vertLayout.addWidget(QLabel("URLs to scrape:"))
         self.providerList = QListWidget()
         self.providerList.setMinimumWidth(600)
+
+        # Enable multi-line selection
+        self.providerList.setSelectionMode(QAbstractItemView.ExtendedSelection)
+
         self.vertLayout.addWidget(self.providerList)
 
+    def _toggleRemove(self):
+        """ Slot responsible for enabling/disabling the remove button """
+        if len(self.providerList.selectedItems()) > 0:
+            self.rmButton.setEnabled(True)
+        else:
+            self.rmButton.setEnabled(False)
 
 class ProviderDB:
+    """ Model for the jobadd providers """
+
     def __init__(self):
+        # Specification of the database file to be used
         self.dbFile = "settings.json"
 
     def writeData(self, provider_list):
