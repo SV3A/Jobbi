@@ -9,7 +9,7 @@ setup(name='get_job',
       license='',
       packages=['get_job'],
       install_requires=[
-          'requests'
+          'requests',
           'beautifulsoup4',
           'pyqt5'
       ],
