@@ -2,7 +2,7 @@ import sys
 import settings
 import addslogic as al
 from util import link_format
-from get_job import img_path
+from main import img_path
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon, QPalette, QColor
@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QToolBar, QAction, QStatusBar, QScrollArea
 from PyQt5.QtWidgets import QLabel, QTextEdit
 
 
-class GetJobUI(QMainWindow):
+class JobbiUI(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -96,7 +96,7 @@ class GetJobUI(QMainWindow):
         self.setStatusBar(self.status)
 
     def _setupWindow(self):
-        self.setWindowTitle('Get Job')
+        self.setWindowTitle('Jobbi')
         self.setGeometry(0, 0, 990, 660)
         self.setMinimumWidth(800)
         self.setMinimumHeight(400)
