@@ -44,12 +44,7 @@ class SettingsDialog(QDialog):
         self.vertLayout.addWidget(self.buttonBox)
 
         # Signal to slot setup
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-
-        self.addButton.clicked.connect(self.addItem)
-        self.rmButton.clicked.connect(self.removeItem)
-        self.providerList.itemSelectionChanged.connect(self._toggleRemove)
+        self._setupSignals()
 
     def _setupDialog(self):
         """ Sets up the window and layouts """
@@ -59,6 +54,31 @@ class SettingsDialog(QDialog):
         self.horzLayout = QHBoxLayout()
 
         self.setLayout(self.vertLayout)
+
+    def _createUrlList(self):
+        """ Sets up the url list containing the jobadd providers """
+        self.vertLayout.addWidget(QLabel("URLs to scrape:"))
+        self.providerList = QListWidget()
+        self.providerList.setMinimumWidth(600)
+
+        # Enable multi-line selection
+        self.providerList.setSelectionMode(QAbstractItemView.ExtendedSelection)
+
+        self.vertLayout.addWidget(self.providerList)
+
+    def _setupSignals(self):
+        """ Sets up the signals to slots"""
+        # Save/cancel buttons
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+
+        # Url add/remove button
+        self.addButton.clicked.connect(self.addItem)
+        self.rmButton.clicked.connect(self.removeItem)
+
+        # Double click and selection of list items
+        self.providerList.itemDoubleClicked.connect(self._handleDoubleClick)
+        self.providerList.itemSelectionChanged.connect(self._handleSelChange)
 
     def _initiateProviderList(self):
         """ If the class is initiated with urls add them to the list object """
@@ -83,23 +103,22 @@ class SettingsDialog(QDialog):
             # Remove from reference list
             self.urlItems.pop(rmIdx)
 
-    def _createUrlList(self):
-        """ Sets up the url list containing the jobadd providers """
-        self.vertLayout.addWidget(QLabel("URLs to scrape:"))
-        self.providerList = QListWidget()
-        self.providerList.setMinimumWidth(600)
+    def _handleDoubleClick(self, item):
+        """ Opens line for editing """
+        self.providerList.openPersistentEditor(item)
 
-        # Enable multi-line selection
-        self.providerList.setSelectionMode(QAbstractItemView.ExtendedSelection)
-
-        self.vertLayout.addWidget(self.providerList)
-
-    def _toggleRemove(self):
-        """ Slot responsible for enabling/disabling the remove button """
+    def _handleSelChange(self):
+        """ Slot responsible for handling selection dependent states """
         if len(self.providerList.selectedItems()) > 0:
             self.rmButton.setEnabled(True)
         else:
             self.rmButton.setEnabled(False)
+
+            # Close open line edits
+            for item in self.urlItems:
+                if self.providerList.isPersistentEditorOpen(item):
+                    self.providerList.closePersistentEditor(item)
+
 
 class ProviderDB:
     """ Model for the jobadd providers """
