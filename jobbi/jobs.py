@@ -32,7 +32,10 @@ class JobDB:
                 sys.exit("Error")
 
             # Parse html
-            scr.parse_adds()
+            try:
+                scr.parse_adds()
+            except Exception:
+                print('Warning "' + domain + '" scraper crashed')
 
             # If data exists guard for duplicate adds
             if os.path.isfile("./"+self.dbFile):
